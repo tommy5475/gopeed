@@ -75,6 +75,8 @@ func BuildHTTPClient(timeout time.Duration, proxy string) *http.Client {
 		IdleConnTimeout:     90 * time.Second,
 		DisableCompression:  false,
 		TLSHandshakeTimeout: 10 * time.Second,
+		// Increased from default to better handle slow or congested servers
+		ResponseHeaderTimeout: 30 * time.Second,
 	}
 
 	if proxy != "" {
@@ -86,43 +88,3 @@ func BuildHTTPClient(timeout time.Duration, proxy string) *http.Client {
 	return &http.Client{
 		Timeout:   timeout,
 		Transport: transport,
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			if len(via) >= 10 {
-				return http.ErrUseLastResponse
-			}
-			return nil
-		},
-	}
-}
-
-// Status represents the current state of a download task.
-type Status int
-
-const (
-	StatusReady   Status = iota // Task created but not started
-	StatusRunning               // Task is actively downloading
-	StatusPause                 // Task has been paused
-	StatusWait                  // Task is waiting in queue
-	StatusError                 // Task encountered an error
-	StatusDone                  // Task completed successfully
-)
-
-// String returns a human-readable representation of the Status.
-func (s Status) String() string {
-	switch s {
-	case StatusReady:
-		return "ready"
-	case StatusRunning:
-		return "running"
-	case StatusPause:
-		return "pause"
-	case StatusWait:
-		return "wait"
-	case StatusError:
-		return "error"
-	case StatusDone:
-		return "done"
-	default:
-		return "unknown"
-	}
-}
