@@ -77,12 +77,14 @@ func BuildHTTPClient(timeout time.Duration, proxy string) *http.Client {
 		DisableCompression:  false,
 		TLSHandshakeTimeout: 10 * time.Second,
 		// Increased from 30s to 60s to better handle slow or congested servers
-		// on my home network this was timing out too often on large files
+		// on my home network this was timing out too often during large downloads
 		ResponseHeaderTimeout: 60 * time.Second,
-		// Raised MaxIdleConnsPerHost from the default (2) to 16 so that
-		// multiple concurrent chunk requests to the same host reuse connections
-		// instead of constantly opening new ones.
-		MaxIdleConnsPerHost: 16,
 	}
 
-	if pro
+	client := &http.Client{
+		Transport: transport,
+		Timeout:   timeout,
+	}
+
+	return client
+}
