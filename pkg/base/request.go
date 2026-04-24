@@ -54,6 +54,7 @@ type Options struct {
 	// Extra contains protocol-specific options
 	Extra interface{} `json:"extra,omitempty"`
 	// Connections is the number of concurrent connections per file
+	// I bumped the default to 8 in the server config; this field just holds the override
 	Connections int `json:"connections,omitempty"`
 }
 
@@ -78,8 +79,10 @@ func BuildHTTPClient(timeout time.Duration, proxy string) *http.Client {
 		// Increased from 30s to 60s to better handle slow or congested servers
 		// on my home network this was timing out too often on large files
 		ResponseHeaderTimeout: 60 * time.Second,
+		// Raised MaxIdleConnsPerHost from the default (2) to 16 so that
+		// multiple concurrent chunk requests to the same host reuse connections
+		// instead of constantly opening new ones.
+		MaxIdleConnsPerHost: 16,
 	}
 
-	if proxy != "" {
-		// Proxy configuration would be applied here
-		// Kept as a
+	if pro
