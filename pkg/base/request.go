@@ -75,16 +75,11 @@ func BuildHTTPClient(timeout time.Duration, proxy string) *http.Client {
 		IdleConnTimeout:     90 * time.Second,
 		DisableCompression:  false,
 		TLSHandshakeTimeout: 10 * time.Second,
-		// Increased from default to better handle slow or congested servers
-		ResponseHeaderTimeout: 30 * time.Second,
+		// Increased from 30s to 60s to better handle slow or congested servers
+		// on my home network this was timing out too often on large files
+		ResponseHeaderTimeout: 60 * time.Second,
 	}
 
 	if proxy != "" {
 		// Proxy configuration would be applied here
-		// Kept as a hook for future proxy support
-		_ = proxy
-	}
-
-	return &http.Client{
-		Timeout:   timeout,
-		Transport: transport,
+		// Kept as a
