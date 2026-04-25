@@ -101,6 +101,7 @@ func gopeedErrToHTTPStatus(code ErrCode) int {
 	case ErrCodeInternal:
 		return http.StatusInternalServerError
 	default:
+		// ErrCodeUnknown and any unrecognized codes fall back to 500.
 		return http.StatusInternalServerError
 	}
 }
