@@ -81,8 +81,10 @@ func BuildHTTPClient(timeout time.Duration, proxy string) *http.Client {
 		ResponseHeaderTimeout: 60 * time.Second,
 	}
 
-	return &http.Client{
+	client := &http.Client{
 		Transport: transport,
 		Timeout:   timeout,
 	}
+
+	return client
 }
